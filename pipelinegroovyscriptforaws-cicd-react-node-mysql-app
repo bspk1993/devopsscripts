@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/bspk1993/aws-cicd-react-node-mysql-app.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh '/iot/scripts/automation.sh'  // Install PM2 if missing
+                //sh 'export PATH=$PATH:`npm root -g` && pm2 stop myapp || true'
+                //sh 'export PATH=$PATH:`npm root -g` && pm2 start npm --name myapp -- start'
+            }
+        }
+
+    }
+}
