@@ -1,0 +1,28 @@
+sudo apt update
+sudo apt upgrade -y
+sudo apt install openjdk-17-jdk -y
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.9.2.77730.zip -P /opt
+sudo useradd sonar
+sudo apt install unzip -y
+sudo unzip /opt/sonarqube-9.9.2.77730.zip -d /opt
+sudo mv /opt/sonarqube-9.9.2.77730 /opt/sonar
+sudo chown -R sonar:sonar /opt/sonar
+sudo vi /etc/sudoers
+sonar   ALL=(ALL:ALL) NOPASSWD:ALL
+sudo nano /etc/systemd/system/sonar.service
+[Unit]
+Description=SonarQube service
+After=network.target
+
+[Service]
+Type=forking
+User=sonar
+ExecStart=/opt/sonar/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonar/bin/linux-x86-64/sonar.sh stop
+Restart=always
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+sudo systemctl start sonar
+sudo systemctl enable sonar
